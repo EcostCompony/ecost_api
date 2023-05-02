@@ -22,8 +22,8 @@ module.exports = (app) => {
 	app.route('/api/auth/method/signin.checkConfirmCode').get(tokenController.control, signinController.checkConfirmCode)
 
 	// auth / passwordReset
-	//app.route('/api/auth/method/passwordReset.confirmPhoneNumber').get(passwordResetController.confirmPhoneNumber)
-	//app.route('/api/auth/method/passwordReset.checkConfirmCode').get(tokenController.control, passwordResetController.checkConfirmCode)
-	//app.route('/api/auth/method/passwordReset').get(tokenController.control, passwordResetController.passwordReset)
+	app.route('/api/auth/method/passwordReset.confirmPhoneNumber').get(passwordResetController.confirmPhoneNumber)
+	app.route('/api/auth/method/passwordReset.checkConfirmCode').get(tokenController.control, passwordResetController.checkConfirmCode)
+	app.route('/api/auth/method/passwordReset').get(tokenController.control, passwordResetController.passwordReset)
 
 }
