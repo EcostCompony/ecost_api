@@ -12,7 +12,7 @@ exports.confirmPhoneNumber = async (req, res) => {
 	try {
 		var service = req.query.service
 		var phone_number = req.query.phone_number
-		if (phone_number[0] === 8) phone_number[0] = 7
+		if (phone_number[0] === '8') phone_number = phone_number.replace('8', '7')
 		var ip = req.socket.remoteAddress
 
 		let confirmationIP = await Confirmation.findOne({ "ip": ip })
@@ -36,6 +36,7 @@ exports.confirmPhoneNumber = async (req, res) => {
 
 					await Confirmation.findOneAndDelete({ "ip": ip })
 					await Confirmation.findOneAndDelete({ "phone_number": phone_number })
+
 					let confirmation = new Confirmation({ "ip": ip, "phone_number": phone_number, "code": code, "datetime": Date.now() })
 					await confirmation.save()
 
