@@ -76,27 +76,34 @@ exports.checkConfirmCode = async (req, res) => {
 		if (!code) return response.error(4, "one of the required parameters was not passed", [{ "key": 'code', "value": 'required' }], res)
 		if (confirmation.code != code) return response.error(105, "invalid confirmation code", [{ "key": 'code', "value": code }], res)
 
-		// TODO: ДОДЕЛАТЬ КОГДА БУДЕТ ВОЗМОЖНОСТЬ
-		/*let user = service === 'specter' ? await SpecterUser.findOne({ "ecost_id": req.token_payload.ecost_id }) : null
+		import('node-fetch').then(({ "default": fetch }) => {
+			fetch(`http:///213.219.214.94:3501/api/method/utils.isUserByEcostId?ecost_id=${req.token_payload.ecost_id}`)
+				.then(async specterRes => {
+					let JSONRes = await specterRes.json()
 
-		if (!user) {
-			let auth_token = jwt.sign({
-				"type": 'service_signup',
-				"service": service,
-				"id": req.token_payload.ecost_id
-			}, config.JWT, { "expiresIn": '30m' })
+					if (!JSONRes.res) {
+						let auth_token = jwt.sign({
+							"type": 'service_signup',
+							"service": service,
+							"id": req.token_payload.ecost_id
+						}, config.JWT, { "expiresIn": '30m' })
 
-			return response.send({ "auth_token": `Bearer ${auth_token}` }, res)
-		}
+						return response.send({ "auth_token": `Bearer ${auth_token}` }, res)
+					} else {
+						let access_token = jwt.sign({
+							"type": 'access',
+							"service": service,
+							"ecost_id": req.token_payload.ecost_id,
+							"service_id": JSONRes.res.service_id
+						}, config.JWT, { "expiresIn": '540d' })
 
-		let access_token = jwt.sign({
-			"type": 'access',
-			"service": service,
-			"ecost_id": req.token_payload.ecost_id,
-			"specter_id": user._id
-		}, config.JWT, { "expiresIn": '540d' })
-
-		return response.send({ "access_token": `Bearer ${access_token}` }, res)*/
+						return response.send({ "access_token": `Bearer ${access_token}` }, res)
+					}
+				})
+				.catch(error => {
+					return response.systemError(error, res)
+				})
+		})
 	} catch (error) {
 		return response.systemError(error, res)
 	}
