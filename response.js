@@ -1,10 +1,10 @@
 'use strict'
 
-exports.send = (values, res) => res.status(200).json({ "res": values }).end()
+exports.send = (values, res) => res.json({ "res": values }).end()
 
 exports.error = (code, message, details, res) => {
 
-	res.status(400).json({
+	res.json({
 		"error": {
 			"error_code": code,
 			"error_msg": message,
@@ -17,7 +17,7 @@ exports.error = (code, message, details, res) => {
 exports.systemError = (error, res) => {
 
 	console.log(error)
-	res.status(400).json({
+	res.json({
 		"error": {
 			"error_code": 1,
 			"error_msg": "unknown error"

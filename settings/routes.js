@@ -1,29 +1,31 @@
 'use strict'
 
-module.exports = (app) => {
+module.exports = app => {
 
 	const tokenController = require('./../Controller/TokenController')
+	const versionsController = require('./../Controller/VersionsController')
 	const signupController = require('./../Controller/SignupController')
 	const signinController = require('./../Controller/SigninController')
-	const passwordResetController = require('./../Controller/PasswordResetController')
-
-	app.all('*', (req, res, next) => {
-		if (!req.query.v) return require('./../response').error(4, "one of the required parameters was not passed", [{ "key": 'v', "value": 'required' }], res)
-		return next()
-	})
 
 	//	auth / signup
-	app.route('/api/auth/method/signup.confirmPhoneNumber').get(signupController.confirmPhoneNumber)
-	app.route('/api/auth/method/signup.checkConfirmCode').get(tokenController.control, signupController.checkConfirmCode)
-	app.route('/api/auth/method/signup').get(tokenController.control, signupController.signup)
+	app.route('/api/auth/method/signup.confirmPhoneNumber').all(versionsController, signupController.confirmPhoneNumber)
+	app.route('/api/auth/method/signup.checkConfirmCode').all(tokenController, versionsController, signupController.checkConfirmCode)
+	app.route('/api/auth/method/signup').all(tokenController, versionsController, signupController.signup)
 
 	// auth / signin
-	app.route('/api/auth/method/signin').get(signinController.signin)
-	app.route('/api/auth/method/signin.checkConfirmCode').get(tokenController.control, signinController.checkConfirmCode)
+	app.route('/api/auth/method/signin').all(versionsController, signinController.signin)
+	app.route('/api/auth/method/signin.checkConfirmCode').all(tokenController, versionsController, signinController.checkConfirmCode)
 
-	// auth / passwordReset
-	app.route('/api/auth/method/passwordReset.confirmPhoneNumber').get(passwordResetController.confirmPhoneNumber)
-	app.route('/api/auth/method/passwordReset.checkConfirmCode').get(tokenController.control, passwordResetController.checkConfirmCode)
-	app.route('/api/auth/method/passwordReset').get(tokenController.control, passwordResetController.passwordReset)
+	app.all('*', (req, res, next) => {
+
+		const response = require('./../response')
+
+		try {
+			return response.error(2, "not found", [{ "key": 'URL', "value": req.originalUrl }], res)
+		} catch (error) {
+			return response.systemError(error, res)
+		}
+
+	})
 
 }

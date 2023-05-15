@@ -1,18 +1,14 @@
-const passport = require('passport')
-const config = require('./config')
-
 const app = require('express')()
+
 const PORT = process.env.PORT || 3500
 
-app.use(passport.initialize())
-
-require('./middleware/passport')(passport)
+require('./middleware/passport')(require('passport'))
 require('./settings/routes')(app)
 
 const start = async () => {
 
 	try {
-		await require('mongoose').connect(config.MONGODB)
+		await require('mongoose').connect(require('./config').MONGODB_URI)
 		app.listen(PORT, () => console.log(`App listen on port ${PORT}`))
 	} catch (error) {
 		console.log(error)
